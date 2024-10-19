@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分数页面</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            text-align: center;
+            background: url('0-90.gif') no-repeat center center;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 { 
+            color: green; /* 标题颜色 */
+            font-size: 40px; /* 根据背景图片大小调整 */
+            margin: 0;
+        }
+        .content {
+            padding: 40px;
+        }
+        img {
+            width: 50%;
+            max-width: 150px; /* 限制图片最大宽度 */
+            margin-top: 20px;
+        }
+           p {
+            color: #32cd32; /* 段落文本也是绿色 */
+        }
+        @media (   p {
+        max-width: 500px) {
+            h1 {
+                font-size: 24px;
+            }
+            img {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>你的分数是：<span id="score">80</span>分！</h1>
+    </div>
+    <div class="content">
+        <p>继续努力，你可以做到更好！</p>
+    </div>
+    <script>
+        function displayScore() {
+            const score = window.location.search.split('=')[1];
+            document.getElementById('score').textContent = score;
+        }
+        displayScore();
+    </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>答题主菜单</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: white; /* Set background color to white */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Distribute space between elements */
+  }
+  .header {
+    padding: 20px;
+  }
+  .header h1 {
+    margin: 0;
+    color: #333; /* Reset the title color */
+  }
+  .content {
+    width: 100%;
+    height: 80%; /* Adjust the height as needed */
+    background: url('01.gif') no-repeat center center; /* Replace with your image URL */
+    background-size: cover;
+  }
+  .menu {
+    padding: 20px;
+    width: 100%;
+    max-width: 600px; /* Adjust max-width as needed */
+  }
+  .menu button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff; /* Set button background color to blue */
+  }
+  .menu button:hover {
+    background-color: #0056b3;
+  }
+  .settings, .leaderboard {
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+  }
+  .settings.active, .leaderboard.active {
+    display: block;
+  }
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .menu button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+    .settings, .leaderboard {
+      padding: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>同心反邪，共守平安</h1>
+</div>
+
+<audio autoplay loop>
+  <source src="01.mp3" type="audio/mpeg"> <!-- Replace with your audio file -->
+  Your browser does not support the audio element.
+</audio>
+
+<div class="content"></div>
+
+<div class="menu">
+  <button onclick="startQuiz()">开始答题</button>
+  <button onclick="toggleLeaderboard()">查看排行榜</button>
+  <button onclick="toggleSettings()">设置</button>
+</div>
+
+<div class="settings" id="settings">
+  <h2>设置</h2>
+  <label for="volume">音量:</label>
+  <input type="range" id="volume" min="0" max="100" value="50" onchange="adjustVolume()">
+  <br><br>
+  <label for="brightness">亮度:</label>
+  <input type="range" id="brightness" min="0" max="100" value="50" onchange="adjustBrightness()">
+  <br><br>
+  <button onclick="saveSettings()">保存</button>
+  <button onclick="toggleSettings()">取消</button>
+</div>
+
+<div class="leaderboard" id="leaderboard">
+  <h2>排行榜</h2>
+  <input type="text" id="search" placeholder="搜索玩家" oninput="searchLeaderboard()">
+  <br><br>
+  <ol id="leaderboard-list"></ol>
+  <button onclick="toggleLeaderboard()">关闭</button>
+</div>
+
+<script>
+  function startQuiz() {
+    window.location.href = 'quiz.html';
+  }
+
+  function toggleLeaderboard() {
+    var leaderboard = document.getElementById('leaderboard');
+    if(leaderboard.classList.contains('active')) {
+      leaderboard.classList.remove('active');
+    } else {
+      leaderboard.classList.add('active');
+      displayLeaderboard();
+    }
+  }
+
+  function toggleSettings() {
+    var settings = document.getElementById('settings');
+    if(settings.classList.contains('active')) {
+      settings.classList.remove('active');
+    } else {
+      settings.classList.add('active');
+    }
+  }
+
+  function adjustVolume() {
+    var volume = document.getElementById('volume').value;
+    var audio = document.querySelector('audio');
+    audio.volume = volume / 100;
+  }
+
+  function adjustBrightness() {
+    var brightness = document.getElementById('brightness').value;
+    // Adjust screen brightness here (Note: This may not work in all browsers)
+    console.log("亮度调整为: " + brightness + "%");
+  }
+
+  function saveSettings() {
+    var settings = document.getElementById('settings');
+    settings.classList.remove('active');
+    alert("设置已保存！");
+  }
+
+  var leaderboardData = [
+    { name: '小江', score: 10 },
+    { name: '小游', score: 9 },
+    { name: '小华', score: 8 },
+    { name: '小于', score: 6 }
+  ];
+
+  function displayLeaderboard() {
+    var list = document.getElementById('leaderboard-list');
+    list.innerHTML = '';
+    leaderboardData.sort(function(a, b) {
+      return b.score - a.score;
+    });
+    leaderboardData.forEach(function(player, index) {
+      var item = document.createElement('li');
+      item.textContent = (index + 1) + '. ' + player.name + ' - ' + player.score + ' 分';
+      list.appendChild(item);
+    });
+  }
+
+  function searchLeaderboard() {
+    var search = document.getElementById('search').value.toLowerCase();
+    var list = document.getElementById('leaderboard-list');
+    list.innerHTML = '';
+    leaderboardData.filter(function(player) {
+      return player.name.toLowerCase().includes(search);
+    }).forEach(function(player, index) {
+      var item = document.createElement('li');
+      item.textContent = (index + 1) + '. ' + player.name + ' - ' + player.score + ' 分';
+      list.appendChild(item);
+    });
+  }
+</script>
+
+</body>
+</html>

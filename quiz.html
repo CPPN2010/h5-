@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题页面</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: url('02.gif') no-repeat center center;
+            background-size: contain; 
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .question { 
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px; 
+            background: white; 
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+            margin-top: 10px;
+        }
+        .question h3 { margin: 0; }
+        .options label { 
+            display: block; 
+            margin-bottom: 5px; 
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+        }
+        .options input[type="radio"] { 
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            display: inline-block;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+        }
+        .options input[type="radio"]::before {
+            content: '';
+            display: inline-block;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #999;
+            background-color: #fff;
+        }
+        .options input[type="radio"]:checked::before {
+            border-color: cyan;
+        }
+        .options input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            border-radius: 50%;
+            background-color: cyan;
+        }
+        button { 
+            background-color: cyan;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            margin-top: 20px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #a9f5b3;
+        }
+        #timer { 
+            margin-top: 20px; 
+            font-size: 18px;
+        }
+        @media (max-width: 600px) {
+            .question {
+                width: 90%;
+                margin: 10px 0;
+            }
+            button {
+                width: 90%;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>反邪教大考验</h1>
+<div id="timer">剩余时间：<span id="time">120</span>秒</div>
+
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">提交答案</button>
+
+<script>
+    // 题目数据
+    var questions = [ { question: "1.我国实行的是宗教信仰________政策，但所有的宗教活动都要依照《宪法》和相关法律进行。", options: ["A. 制约", "B. 自由", "C. 科学","D.政教合一"], answer: "B" },
+  { question: "2.我国是一个多民族的国家，也是一个多宗教的国家，主要宗教有________  。", options: ["A.明教、佛教、道教、伊斯兰教、天主教 ", "B.基督教、佛教、道教、太阳神教、神道教 ", "C.天主教、佛教、道教、太阳神教、摩尼教 ","D.天主教、基督教、伊斯兰教、佛教、道教"], answer: "D" },
+  { question: "3.当今世界三大公害是：毒品、恐怖主义和________。", options: ["A. 邪教", "B. 核武器", "C.地区冲突 ","D.战争"], answer: "A" },
+  { question: "4.邪教的本质主要体现在 ________。 ", options: ["A. 反人类", "B. 反社会 ", "C.反科学 ","D.反政府"], answer: "D" },
+  { question: "5. 在我国已知的25个邪教组织中，约有________打着基督教的旗号，进行邪教活动。", options: ["A. 三分之二", "B.三分之一.", "C. 四分之一","D.五分之一"], answer: "A" },
+  { question: "6.当接到“法轮功”等邪教组织的反动宣传电话时，不正确的做法是________。 ", options: ["A.直接把它挂掉 ", "B.电话放到一边不听 ", "C. 记录下情况并报警","D.听信电话里的内容"], answer: "D" },
+  { question: "7. 上网时发现邪教宣传内容，正确的做法是（）。", options: ["A. 仔细阅读相关内容  ", "B. 向别人传播", "C.不听、不看、不信、不传 "], answer: "C" },
+  { question: "8.党的十八大报告提出，要“深入开展（），弘扬社会主义法治精神，树立社会主义法治理念，增强全社会学法遵法守法用法意识”。", options: ["A.物质文明建设 ", "B. 精神文明建设", "C. 弘扬社会主义核心价值观活动","D.法制宣传教育"], answer: "C" },
+  { question: "9. 邪教“教主”为了达到（）的目的，散布“末世论”等谣言，威胁恐吓群众，让一些人产生依赖、恐惧心理，扰乱社会秩序。", options: ["A. 教主崇拜", "B. 环境保护", "C.强身健体 ","D.社会和谐"], answer: "A" },
+  { question: "10. 邪教“教主”利用散布歪理邪说、谎言骗局、心理暗示等手法，对其组织成员实施“洗脑术”，并用惩罚、威胁等恐吓手段，让人“进得来，出不去”，人人自危，从而达到（）的目的。", options: ["A. 练习功", "B. 精神控制", "C. 健身强体","D.包治百病"], answer: "B" },
+
+    ];
+
+    // 初始化题目
+function initQuiz() {
+    var quizContainer = document.getElementById('quiz');
+    questions.forEach(function(question, index) {
+        var questionEl = document.createElement('div');
+        questionEl.classList.add('question');
+        questionEl.innerHTML = '<h3>' + (index + 1) + '. ' + question.question + '</h3>';
+        question.options.forEach(function(option) {
+            var label = document.createElement('label');
+            var input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'q' + (index + 1);
+            input.value = option[0]; // 使用选项的首字母作为值
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(option));
+            questionEl.appendChild(label);
+        });
+        quizContainer.appendChild(questionEl);
+    });
+}
+
+// 检查答案并跳转到分数页面
+function checkAnswers() {
+    var score = 0;
+    var allAnswered = true;
+
+    questions.forEach(function(question, index) {
+        var answered = document.querySelector('input[name="q' + (index + 1) + '"]:checked');
+        if (!answered) {
+            allAnswered = false;
+        } else {
+            if (answered.value === question.answer) {
+                score++;
+            }
+        }
+    });
+
+    if (!allAnswered) {
+        alert("请回答所有问题！");
+        return; // 阻止提交
+    }
+      // 跳转到分数页面并传递分数
+    if (score === 10) {
+        window.location.href = 'score100.html?score=' + score * 10;
+    } else {
+        window.location.href = 'scoreLess100.html?score=' + score * 10;
+    }
+}
+// 倒计时函数
+function countdown() {
+    var timeLeft = 120;
+    var timer = setInterval(function() {
+        timeLeft--;
+        document.getElementById('time').textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            // 自动提交答案
+            checkAnswers();
+        }
+    }, 1000);
+}
+
+// 页面加载完成后初始化题目和倒计时
+window.onload = function() {
+    initQuiz();
+    countdown();
+};
+</script>
